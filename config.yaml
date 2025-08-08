@@ -1,0 +1,61 @@
+# Inbox Cleaner Agent configuration
+
+# Gmail API OAuth files. Place your OAuth client as credentials.json in the project root.
+oauth:
+  credentials_file: credentials.json
+  token_file: token.json
+
+# Operating mode
+mode:
+  dry_run: true            # Start safe. Use --apply to override at runtime
+  inbox_only: true         # Limit to INBOX
+  unread_only: true        # Do not touch read emails (as requested)
+
+# Actions
+actions:
+  unsubscribe: true        # Try all supported unsubscribe methods
+  archive_after_unsubscribe: true
+  delete:
+    enabled: false         # Disabled until you opt-in and define rules
+    trash_staging_days: 14 # When enabled, move to AI/Trash-Staging for N days before purge
+
+# Scope filters
+filters:
+  # Only act on messages that have List-Unsubscribe header (typical for newsletters/promotions)
+  require_list_unsubscribe: true
+  # Optionally constrain to Gmail categories. Leave empty to scan all. Examples: ["CATEGORY_PROMOTIONS", "CATEGORY_UPDATES"]
+  gmail_category_label_ids: ["CATEGORY_PROMOTIONS", "CATEGORY_UPDATES"]
+
+# Keep rules
+keep:
+  # Strings matched case-insensitively against From: name or email
+  senders_contains:
+    - "Bhavna"
+    - "Apsarabollywood"
+    - "Krishnan"
+    - "Vignesh"
+    - "Visalakshi"
+
+# Safety caps
+limits:
+  max_messages_per_run: 500        # Hard cap to prevent runaway actions
+  max_unsubscribes_per_run: 150
+
+# Reporting
+report:
+  send_email_summary: true
+  recipient: me                    # "me" sends to your own account via Gmail API
+  include_samples: true
+  max_samples_per_bucket: 20
+
+# Labels used by the agent. They will be created if missing.
+labels:
+  to_unsubscribe: "AI/To-Unsubscribe"
+  unsubscribed: "AI/Unsubscribed"
+  trash_staging: "AI/Trash-Staging"
+  keep: "AI/Keep"
+
+# Ledger of unsubscribed domains/senders
+ledger:
+  enabled: true
+  path: data/unsubscribed_ledger.csv
